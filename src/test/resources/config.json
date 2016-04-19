@@ -1,0 +1,73 @@
+{
+    "ldap": {
+        "server": "ldapserver.containx.io",
+        "domain": "containx.io"
+    },
+    "users": [
+        {
+            "username": "admin",
+            "password": "admin",
+            "groups": [
+                "Admin"
+            ]
+        },
+        {
+            "username": "user",
+            "password": "user",
+            "groups": [
+                "Developers"
+            ]
+        },
+        {
+            "username": "super",
+            "password": "super",
+            "groups": [
+                "Developers",
+                "Admin"
+            ]
+        }
+    ],
+    "authorization": {
+        "access": [{
+            "group": "Admin",
+            "permissions": [
+                {
+                    "allowed": "*",
+                    "type": "app"
+                },
+                {
+                    "allowed": "create",
+                    "type": "group"
+                },
+                {
+                    "allowed": "delete",
+                    "type": "group",
+                    "path": "/dev"
+                },
+                {
+                    "allowed": "update",
+                    "type": "group"
+                },
+                {
+                    "allowed": "view",
+                    "type": "group"
+                }]
+        }, {
+            "group": "Developers",
+            "permissions": [
+                {
+                    "allowed": "create",
+                    "type": "app",
+                    "path": "/dev"
+                },
+                {
+                    "allowed": "create",
+                    "type": "app",
+                    "path": "/other/dev"
+                }
+            ]
+        }]
+    }
+
+
+}
