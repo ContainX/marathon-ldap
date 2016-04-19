@@ -1,6 +1,7 @@
 # Marathon LDAP Plugin
 
 [![Build Status](https://travis-ci.org/ContainX/marathon-ldap.svg?branch=master)](https://travis-ci.org/ContainX/marathon-ldap)
+[![release](http://github-release-version.herokuapp.com/github/ContainX/marathon-ldap/release.svg?style=flat)](https://github.com/ContainX/marathon-ldap/releases/latest)
 
 A plugin for Mesosphere Marathon which authenticates users via UI/REST against an LDAP Server.  
 
@@ -13,6 +14,10 @@ A plugin for Mesosphere Marathon which authenticates users via UI/REST against a
 - Easy setup and JSON based configuration
 
 ### Installation
+
+#### Downloading a the JAR binary
+
+You can download the latest version of the JAR from our [GitHub Releases Page](https://github.com/ContainX/marathon-ldap/releases)
 
 #### Building plugin from source
 
@@ -71,4 +76,3 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
-

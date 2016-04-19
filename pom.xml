@@ -6,7 +6,7 @@
     <groupId>io.containx</groupId>
     <artifactId>marathon-ldap</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>Marathon LDAP authentication</name>
 
     <properties>
@@ -64,7 +64,61 @@
 
     <build>
         <finalName>marathon-ldap</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.jutzig</groupId>
+                        <artifactId>github-release-plugin</artifactId>
+                        <version>1.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>github-upload</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>release</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <description>Marathon LDAP/AD Plugin</description>
+                            <releaseName>v${project.version}</releaseName>
+                            <tag>${project.version}</tag>
+                            <artifact>${project.build.directory}/marathon-ldap.jar</artifact>
+
+                            <!-- If your project has additional artifacts, such as ones produced by
+                                 the maven-assembly-plugin, you can define the following
+                                 (requires version 1.1.1 of the plugin or higher): -->
+                            <!--<fileSets>-->
+                            <!--<fileSet>-->
+                            <!--<directory>${project.build.directory}</directory>-->
+                            <!--<includes>-->
+                            <!--<include>${project.artifactId}*.tar.gz</include>-->
+                            <!--<include>${project.artifactId}*.zip</include>-->
+                            <!--</includes>-->
+                            <!--</fileSet>-->
+                            <!--</fileSets>-->
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
