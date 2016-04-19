@@ -1,5 +1,7 @@
 # Marathon LDAP Plugin
 
+[![Build Status](https://travis-ci.org/ContainX/marathon-ldap.svg?branch=master)](https://travis-ci.org/ContainX/marathon-ldap)
+
 A plugin for Mesosphere Marathon which authenticates users via UI/REST against an LDAP Server.  
 
 ### Features
