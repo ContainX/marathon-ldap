@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ContainX/marathon-ldap.svg?branch=master)](https://travis-ci.org/ContainX/marathon-ldap)
 [![release](http://github-release-version.herokuapp.com/github/ContainX/marathon-ldap/release.svg?style=flat)](https://github.com/ContainX/marathon-ldap/releases/latest)
-[![marathon](https://img.shields.io/badge/marathon-1.1.1-blue.svg)](https://mesosphere.github.io/marathon/)
+[![marathon](https://img.shields.io/badge/compatibility-marathon%201.1.1+-blue.svg)](https://mesosphere.github.io/marathon/)
 
 A plugin for Mesosphere Marathon which authenticates users via UI/REST against an LDAP Server.  
 
