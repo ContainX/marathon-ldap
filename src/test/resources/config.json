@@ -1,7 +1,8 @@
 {
     "ldap": {
         "server": "ldapserver.containx.io",
-        "domain": "containx.io"
+        "domain": "containx.io",
+        "useSSL": false
     },
     "users": [
         {
