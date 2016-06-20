@@ -23,7 +23,10 @@ import static javax.naming.directory.SearchControls.SUBTREE_SCOPE;
 public final class LDAPHelper {
 
     private static final Logger LOG = Logger.getLogger(LDAPHelper.class.getName());
-    private static final String LDAP_HOSTNAME = "ldap://%s/";
+
+    private static final String LDAPProtocolPlain = "ldap://%s/";
+    private static final String LDAPProtocolSSL   = "ldaps://%s/";
+
 
     public static Set<String> validate(String username, String password, LDAPConfig config ) {
 
@@ -38,7 +41,9 @@ public final class LDAPHelper {
         props.put(Context.SECURITY_CREDENTIALS, password);
 
         try {
-            DirContext context = LdapCtxFactory.getLdapCtxInstance(String.format(LDAP_HOSTNAME, config.getServer()), props);
+            String ldapDsn = getLdapDsn(config);
+            LOG.info("Trying to connect with " + principal + " on " + ldapDsn);
+            DirContext context = LdapCtxFactory.getLdapCtxInstance(ldapDsn, props);
 
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.info("Auth succeeded - Principal: " + principal);
@@ -76,6 +81,14 @@ public final class LDAPHelper {
             LOG.log(Level.SEVERE, "LDAP Error: " + e.getMessage());
         }
         return null;
+    }
+
+    private static String getLdapDsn(LDAPConfig config){
+        String protocol = LDAPHelper.LDAPProtocolPlain;
+        if(config.getUseSSL()){
+            protocol = LDAPHelper.LDAPProtocolSSL;
+        }
+        return String.format(protocol, config.getServer());
     }
 
     private static String toDC(String domainName) {
