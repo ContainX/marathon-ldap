@@ -23,7 +23,10 @@ import static javax.naming.directory.SearchControls.SUBTREE_SCOPE;
 public final class LDAPHelper {
 
     private static final Logger LOG = Logger.getLogger(LDAPHelper.class.getName());
-    private static final String LDAP_HOSTNAME = "ldap://%s/";
+
+    private static final String LDAPProtocolPlain = "ldap://%s/";
+    private static final String LDAPProtocolSSL   = "ldaps://%s/";
+
 
     public static Set<String> validate(String username, String password, LDAPConfig config ) {
 
@@ -34,11 +37,18 @@ public final class LDAPHelper {
 
         Hashtable<String, String> props = new Hashtable<>();
         String principal = toPrincipal(username, config.getDomain());
+
+        if(config.getOpenLdapCompatible()){
+            principal = "uid=" +  username + ",ou=people," + toDC(config.getDomain(), true);
+        }
+
         props.put(Context.SECURITY_PRINCIPAL, principal);
         props.put(Context.SECURITY_CREDENTIALS, password);
 
         try {
-            DirContext context = LdapCtxFactory.getLdapCtxInstance(String.format(LDAP_HOSTNAME, config.getServer()), props);
+            String ldapDsn = getLdapDsn(config);
+            LOG.info("LDAP: Trying to connect with " + principal + " on " + ldapDsn);
+            DirContext context = LdapCtxFactory.getLdapCtxInstance(ldapDsn, props);
 
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.info("Auth succeeded - Principal: " + principal);
@@ -47,7 +57,8 @@ public final class LDAPHelper {
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SUBTREE_SCOPE);
 
-            NamingEnumeration<SearchResult> renum = context.search(toDC(config.getDomain()), "(& (userPrincipalName=" + principal + ")(objectClass=user))", controls);
+            NamingEnumeration<SearchResult> renum = getUserData(context, username, controls, config);
+
             if (!renum.hasMore()) {
                 LOG.warning("Cannot locate user information for " + username);
                 return null;
@@ -78,14 +89,36 @@ public final class LDAPHelper {
         return null;
     }
 
-    private static String toDC(String domainName) {
+    private static NamingEnumeration<SearchResult> getUserData(DirContext context, String username, SearchControls controls, LDAPConfig config) 
+    throws NamingException {
+        if(config.getOpenLdapCompatible()){
+            controls.setReturningAttributes(new String[]{"*", "+"});
+            return context.search(toDC(config.getDomain(), false), "(uid="+username+")", controls);
+        }
+        return context.search(toDC(config.getDomain(), false), "(& (userPrincipalName=" + username + ")(objectClass=user))", controls);
+    }
+
+    private static String getLdapDsn(LDAPConfig config){
+        String protocol = LDAPHelper.LDAPProtocolPlain;
+        if(config.getUseSSL()){
+            protocol = LDAPHelper.LDAPProtocolSSL;
+        }
+        return String.format(protocol, config.getServer());
+    }
+
+    private static String toDC(String domainName, boolean lowerCaseDc) {
+        String dc = "DC";
+        if(lowerCaseDc){
+            dc = "dc";
+        }
+
         StringBuilder buf = new StringBuilder();
         for (String token : domainName.split("\\.")) {
             if (token.length() == 0)
                 continue; // defensive check
             if (buf.length() > 0)
                 buf.append(",");
-            buf.append("DC=").append(token);
+            buf.append(dc + "=").append(token);
         }
         return buf.toString();
     }
