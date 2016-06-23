@@ -25,8 +25,10 @@ public class ConfigurationTest {
     @Test
     public void testThatLDAPIsCorrect() throws Exception {
         Configuration config = getConfig();
-        assertEquals(config.getLdap().getServer(), "ldapserver.containx.io");
-        assertEquals(config.getLdap().getDomain(), "containx.io");
+        assertEquals(config.getLdap().getUrl(), "ldap://localhost:389/");
+        assertEquals(config.getLdap().getBase(), "dc=containx,dc=io");
+        assertEquals(config.getLdap().getUserSearch(), "uid={username}");
+        assertEquals(config.getLdap().getUserSubTree(), "ou=People");
     }
 
     @Test

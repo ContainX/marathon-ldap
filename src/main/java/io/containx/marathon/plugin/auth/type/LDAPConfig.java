@@ -5,63 +5,95 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LDAPConfig {
 
     @JsonProperty
-    private String server;
+    private String url = "ldap://localhost:389";
 
     @JsonProperty
-    private String domain;
+    private String base = "dc=example,dc=com";
 
     @JsonProperty
-    private boolean useSSL;
+    private String dn = "uid={username}";
 
     @JsonProperty
-    private boolean openLdapCompatible;
+    private String userSearch = "(uid={username})";
+
+    @JsonProperty(required = false)
+    private String userSubTree = "ou=People";
+
+    @JsonProperty(required = false)
+    private String groupSearch = null;
+
+    @JsonProperty(required = false)
+    private String groupSubTree = "ou=Group";
+
 
     public LDAPConfig() {}
 
-    public LDAPConfig(String server, String domain, boolean useSSL, boolean openLdapCompatible) {
-        this.server             = server;
-        this.domain             = domain;
-        this.useSSL             = useSSL;
-        this.openLdapCompatible = openLdapCompatible;
+    public String getUrl() {
+        return url;
     }
 
-    public String getServer() {
-        return server;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public void setServer(String server) {
-        this.server = server;
+    public String getBase() {
+        return base;
     }
 
-    public String getDomain() {
-        return domain;
+    public void setBase(String base) {
+        this.base = base;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public String getDn() {
+        return dn;
     }
 
-    public boolean getUseSSL(){
-        return useSSL;
+    public void setDn(String search) {
+        this.dn = search;
     }
 
-    public void setUseSSL(boolean useSSL){
-        this.useSSL = useSSL;
+    public String getUserSearch() {
+        return userSearch;
     }
 
-    public boolean getOpenLdapCompatible(){
-        return this.openLdapCompatible;
+    public void setUserSearch(String userSearch) {
+        this.userSearch = userSearch;
     }
 
-    public void setOpenLdapCompatible(boolean openLdapCompatible){
-        this.openLdapCompatible = openLdapCompatible;
+    public String getGroupSubTree() {
+        return groupSubTree;
+    }
+
+    public void setGroupSubTree(String groupSubTree) {
+        this.groupSubTree = groupSubTree;
+    }
+
+    public String getGroupSearch() {
+        return groupSearch;
+    }
+
+    public void setGroupSearch(String groupSearch) {
+        this.groupSearch = groupSearch;
+    }
+
+    public String getUserSubTree() {
+        return userSubTree;
+    }
+
+    public void setUserSubTree(String userSubTree) {
+        this.userSubTree = userSubTree;
     }
 
     @Override
     public String toString() {
         return "LDAPConfig{" +
-            "server='" + server + '\'' +
-            ", domain='" + domain + '\'' +
-            '}';
+                "url='" + url + '\'' +
+                ", base='" + base + '\'' +
+                ", dn='" + dn + '\'' +
+                ", userSearch='" + userSearch + '\'' +
+                ", userSubTree='" + userSubTree + '\'' +
+                ", groupSearch='" + groupSearch + '\'' +
+                ", groupSubTree='" + groupSubTree + '\'' +
+                '}';
     }
 }

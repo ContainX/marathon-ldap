@@ -11,18 +11,16 @@ import mesosphere.marathon.plugin.auth.Authorizer;
 import mesosphere.marathon.plugin.auth.Identity;
 import mesosphere.marathon.plugin.http.HttpResponse;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LDAPAuthorizor implements Authorizer {
 
-    private static final Logger LOG = Logger.getLogger(LDAPAuthorizor.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(LDAPAuthorizor.class);
 
     @Override
     public <Resource> boolean isAuthorized(Identity identity, AuthorizedAction<Resource> authorizedAction, Resource resource) {
-        if (LOG.isLoggable(Level.FINE)) {
-            LOG.fine("isAuthorized: " + identity + ", action: " + authorizedAction + ", resource: " + resource);
-        }
+        LOGGER.debug("isAuthorized: {}, action: {}, resource: {}", identity, authorizedAction, resource);
 
         if (identity instanceof UserIdentity) {
             UserIdentity user = (UserIdentity) identity;
@@ -40,11 +38,7 @@ public class LDAPAuthorizor implements Authorizer {
 
     private boolean isAuthorized(UserIdentity identity, Action action, PathId path) {
         boolean authorized = identity.isAuthorized(action, path.toString());
-
-        if (LOG.isLoggable(Level.FINE)) {
-            LOG.fine("IsAuthorized: Action :: " + action + ", Path = " + path.toString() + ", authorized :: " + authorized);
-        }
-
+        LOGGER.debug("IsAuthorized: Action :: {}, Path = {}, authorized :: {}" + action, path.toString(), authorized);
         return authorized;
     }
 

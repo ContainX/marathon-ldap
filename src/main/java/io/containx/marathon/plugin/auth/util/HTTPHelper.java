@@ -3,6 +3,8 @@ package io.containx.marathon.plugin.auth.util;
 import io.containx.marathon.plugin.auth.type.AuthKey;
 import mesosphere.marathon.plugin.http.HttpRequest;
 import mesosphere.marathon.plugin.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Option;
 
 import java.util.Base64;
@@ -10,12 +12,15 @@ import java.util.Base64;
 public final class HTTPHelper
 {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HTTPHelper.class);
+
     public static AuthKey authKeyFromHeaders(HttpRequest request) throws Exception {
         Option<String> header = request.header("Authorization").headOption();
         if (header.isDefined() && header.get().startsWith("Basic ")) {
             String encoded = header.get().replaceFirst("Basic ", "");
             String decoded = new String(Base64.getDecoder().decode(encoded), "UTF-8");
             String[] userPass = decoded.split(":", 2);
+            LOGGER.debug("Returning username {} from HTTP Request headers", userPass[0]);
             return AuthKey.with(userPass[0], userPass[1]);
         }
         return null;
@@ -23,7 +28,7 @@ public final class HTTPHelper
 
     public static void applyNotAuthenticatedToResponse(HttpResponse response) {
         response.status(401);
-        response.header("WWW-Authenticate", "Basic realm=\"Marathon: Username==Password\"");
+        response.header("WWW-Authenticate", "Basic realm=\"Marathon\"");
         response.body("application/json", "{\"problem\": \"Not Authenticated!\"}".getBytes());
     }
 
