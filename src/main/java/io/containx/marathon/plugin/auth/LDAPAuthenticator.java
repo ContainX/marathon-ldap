@@ -20,17 +20,17 @@ import play.api.libs.json.JsObject;
 import scala.Option;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
 
-    private static final Logger LOG = Logger.getLogger(LDAPAuthenticator.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(LDAPAuthenticator.class);
 
 
     private final ExecutionContext EC = ExecutionContexts.fromExecutorService(Executors.newSingleThreadExecutor());
@@ -51,7 +51,7 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
         try {
             config = new ObjectMapper().readValue(jsObject.toString(), Configuration.class);
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, "Error reading configuration JSON: " + e.getMessage(), e);
+            LOGGER.error("Error reading configuration JSON: {}", e.getMessage(), e);
         }
     }
 
@@ -81,7 +81,7 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
                 }
             }
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error validating user against LDAP: " + ex.getMessage());
+            LOGGER.error("LDAP error validating user: {}", ex.getMessage());
         }
         return null;
     }

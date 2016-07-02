@@ -1,8 +1,9 @@
 {
     "ldap": {
-        "server": "ldapserver.containx.io",
-        "domain": "containx.io",
-        "useSSL": false
+        "url": "ldap://localhost:389/",
+        "base": "dc=containx,dc=io",
+        "userSearch": "uid={username}",
+        "userSubTree": "ou=People"
     },
     "users": [
         {

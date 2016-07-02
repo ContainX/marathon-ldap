@@ -9,8 +9,13 @@
             "implementation": "io.containx.marathon.plugin.auth.LDAPAuthenticator",
             "configuration": {
                 "ldap": {
-                    "server": "ldapserver.mydomain.local",
-                    "domain": "mydomain.local"
+                    "url": "ldap://my.ldapserver.local:389",
+                    "base": "dc=example,dc=com",
+                    "dn": "uid={username}",
+                    "userSearch": "(&(uid={username})(objectClass=inetOrgPerson))",
+                    "userSubTree": "ou=People",
+                    "groupSearch": "(&(memberUid={username})(objectClass=posixGroup))",
+                    "groupSubTree": "ou=Group"
                 },
                 "users": [
                     {
