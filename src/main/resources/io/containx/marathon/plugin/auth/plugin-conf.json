@@ -12,6 +12,8 @@
                     "url": "ldap://my.ldapserver.local:389",
                     "base": "dc=example,dc=com",
                     "dn": "uid={username}",
+                    "bindUser": "usernameToBind",
+                    "bindPassword": "passwordToBind",
                     "userSearch": "(&(uid={username})(objectClass=inetOrgPerson))",
                     "userSubTree": "ou=People",
                     "groupSearch": "(&(memberUid={username})(objectClass=posixGroup))",

@@ -25,6 +25,12 @@ public class LDAPConfig {
     @JsonProperty(required = false)
     private String groupSubTree = "ou=Group";
 
+    @JsonProperty(required = false)
+    private String bindUser = null;
+
+    @JsonProperty(required = false)
+    private String bindPassword = null;
+
 
     public LDAPConfig() {}
 
@@ -42,6 +48,14 @@ public class LDAPConfig {
 
     public void setBase(String base) {
         this.base = base;
+    }
+
+    public String getBindUser() {
+        return bindUser;
+    }
+
+    public String getBindPassword() {
+        return bindPassword;
     }
 
     public String getDn() {
@@ -90,6 +104,8 @@ public class LDAPConfig {
                 "url='" + url + '\'' +
                 ", base='" + base + '\'' +
                 ", dn='" + dn + '\'' +
+                ", bindUser='" + bindUser + '\'' +
+                ", bindPassword='" + bindPassword + '\'' +
                 ", userSearch='" + userSearch + '\'' +
                 ", userSubTree='" + userSubTree + '\'' +
                 ", groupSearch='" + groupSearch + '\'' +
