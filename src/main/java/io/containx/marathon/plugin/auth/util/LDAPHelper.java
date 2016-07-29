@@ -45,7 +45,7 @@ public final class LDAPHelper {
                         .toString();
             }
 
-            LOGGER.error("LDAP trying to connect as {} on {}", dn, config.getUrl());
+            LOGGER.debug("LDAP trying to connect as {} on {}", dn, config.getUrl());
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
             env.put(Context.PROVIDER_URL, config.getUrl());
@@ -68,7 +68,7 @@ public final class LDAPHelper {
                         .append(",").append(searchContext)
                         .toString();
             }
-            LOGGER.error("LDAP searching {} in {}", searchString, searchContext);
+            LOGGER.debug("LDAP searching {} in {}", searchString, searchContext);
             NamingEnumeration<SearchResult> renum =
                     context.search(searchContext, searchString, controls);
 
@@ -78,7 +78,7 @@ public final class LDAPHelper {
             }
 
             SearchResult result = renum.next();
-            LOGGER.error("LDAP user search found {}", result.toString());
+            LOGGER.debug("LDAP user search found {}", result.toString());
 
             if(bindUser != null) {
                 Attribute realDN = result.getAttributes().get("distinguishedname");
@@ -88,7 +88,7 @@ public final class LDAPHelper {
                     return null;
                 }
 
-                LOGGER.error("Authenticate with DN {}", dn);
+                LOGGER.debug("Authenticate with DN {}", dn);
                 env.put(Context.SECURITY_PRINCIPAL, dn);
                 env.put(Context.SECURITY_CREDENTIALS, userPassword);
 
@@ -122,14 +122,14 @@ public final class LDAPHelper {
                             .append(",").append(searchContext)
                             .toString();
                 }
-                LOGGER.error("LDAP searching for group membership {} in {}", searchString, searchContext);
+                LOGGER.debug("LDAP searching for group membership {} in {}", searchString, searchContext);
                 renum = context.search(searchContext, searchString, controls);
 
                 while (renum.hasMore()) {
                     SearchResult group = renum.next();
                     String groupName = group.getAttributes().get("cn").get().toString();
                     memberships.add(groupName);
-                    LOGGER.error("LDAP found {} in group {}", username, groupName);
+                    LOGGER.debug("LDAP found {} in group {}", username, groupName);
                 }
 
             }
