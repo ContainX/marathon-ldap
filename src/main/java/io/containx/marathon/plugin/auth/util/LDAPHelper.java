@@ -20,7 +20,7 @@ public final class LDAPHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPHelper.class);
 
 
-    public static Set<String> validate(String username, String password, LDAPConfig config ) {
+    public static Set<String> validate(String username, String userPassword, LDAPConfig config) {
 
         if (config == null) {
             LOGGER.warn("LDAP Configuration not defined.  Skipping LDAP authentication");
@@ -30,22 +30,31 @@ public final class LDAPHelper {
         DirContext context = null;
 
         try {
-            String dn = new StringBuilder(config.getDn().replace("{username}", username))
-                    .append(",")
-                    .append(config.getUserSubTree() != null ? config.getUserSubTree() + "," : "")
-                    .append(config.getBase())
-                    .toString();
+            String dn = "";
+            String bindUser = config.getBindUser();
+            String bindPassword = userPassword;
+
+            if(bindUser != null) {
+                dn = bindUser;
+                bindPassword = config.getBindPassword();
+            } else {
+                dn = new StringBuilder(config.getDn().replace("{username}", username))
+                        .append(",")
+                        .append(config.getUserSubTree() != null ? config.getUserSubTree() + "," : "")
+                        .append(config.getBase())
+                        .toString();
+            }
 
             LOGGER.debug("LDAP trying to connect as {} on {}", dn, config.getUrl());
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
             env.put(Context.PROVIDER_URL, config.getUrl());
             env.put(Context.SECURITY_PRINCIPAL, dn);
-            env.put(Context.SECURITY_CREDENTIALS, password);
+            env.put(Context.SECURITY_CREDENTIALS, bindPassword);
             context = new InitialDirContext(env);
 
             // if an exception wasn't raised, then we managed to bind to the directory
-            LOGGER.info("LDAP Auth succeeded for user {}", dn);
+            LOGGER.info("LDAP Bind succeeded for user {}", dn);
 
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SUBTREE_SCOPE);
@@ -70,6 +79,23 @@ public final class LDAPHelper {
 
             SearchResult result = renum.next();
             LOGGER.debug("LDAP user search found {}", result.toString());
+
+            if(bindUser != null) {
+                Attribute realDN = result.getAttributes().get("distinguishedname");
+                dn = realDN.get(0).toString();
+
+                if(userPassword == null || userPassword.isEmpty()) {
+                    return null;
+                }
+
+                LOGGER.debug("Authenticate with DN {}", dn);
+                env.put(Context.SECURITY_PRINCIPAL, dn);
+                env.put(Context.SECURITY_CREDENTIALS, userPassword);
+
+                context = new InitialDirContext(env);
+
+                LOGGER.info("LDAP Auth succeeded for user {}", dn);
+            }
 
             // search group memberships as user attributes
             Attribute memberOf = result.getAttributes().get("memberOf");
