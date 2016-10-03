@@ -8,10 +8,10 @@ import mesosphere.marathon.plugin.auth.*;
  */
 public enum Action {
     // App Actions
-    CREATE_APP(CreateApp$.MODULE$, PermissionType.CREATE, EntityType.APP),
-    UPDATE_APP(UpdateApp$.MODULE$, PermissionType.UPDATE, EntityType.APP),
-    DELETE_APP(DeleteApp$.MODULE$, PermissionType.DELETE, EntityType.APP),
-    VIEW_APP(ViewApp$.MODULE$, PermissionType.VIEW, EntityType.APP),
+    CREATE_APP(CreateRunSpec$.MODULE$, PermissionType.CREATE, EntityType.APP),
+    UPDATE_APP(UpdateRunSpec$.MODULE$, PermissionType.UPDATE, EntityType.APP),
+    DELETE_APP(DeleteRunSpec$.MODULE$, PermissionType.DELETE, EntityType.APP),
+    VIEW_APP(ViewRunSpec$.MODULE$, PermissionType.VIEW, EntityType.APP),
 
     // Group Actions
     CREATE_GROUP(CreateGroup$.MODULE$, PermissionType.CREATE, EntityType.GROUP),

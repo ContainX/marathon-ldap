@@ -8,7 +8,12 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.PartialResultException;
-import javax.naming.directory.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
@@ -38,14 +43,18 @@ public final class LDAPHelper {
                 dn = bindUser;
                 bindPassword = config.getBindPassword();
             } else {
-                dn = new StringBuilder(config.getDn().replace("{username}", username))
-                        .append(",")
-                        .append(config.getUserSubTree() != null ? config.getUserSubTree() + "," : "")
-                        .append(config.getBase())
-                        .toString();
+                if (config.useSimpleAuthentication()) {
+                    dn = config.getDn().replace("{username}", username);
+                } else {
+                    dn = new StringBuilder(config.getDn().replace("{username}", username))
+                            .append(",")
+                            .append(config.getUserSubTree() != null ? config.getUserSubTree() + "," : "")
+                            .append(config.getBase())
+                            .toString();
+                }
             }
 
-            LOGGER.debug("LDAP trying to connect as {} on {}", dn, config.getUrl());
+            LOGGER.info("LDAP trying to connect as {} on {}", dn, config.getUrl());
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
             env.put(Context.PROVIDER_URL, config.getUrl());
@@ -68,7 +77,7 @@ public final class LDAPHelper {
                         .append(",").append(searchContext)
                         .toString();
             }
-            LOGGER.debug("LDAP searching {} in {}", searchString, searchContext);
+            LOGGER.info("LDAP searching {} in {}", searchString, searchContext);
             NamingEnumeration<SearchResult> renum =
                     context.search(searchContext, searchString, controls);
 
@@ -78,7 +87,7 @@ public final class LDAPHelper {
             }
 
             SearchResult result = renum.next();
-            LOGGER.debug("LDAP user search found {}", result.toString());
+            LOGGER.info("LDAP user search found {}", result.toString());
 
             if(bindUser != null) {
                 Attribute realDN = result.getAttributes().get("distinguishedname");

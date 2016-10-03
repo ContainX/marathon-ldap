@@ -76,12 +76,13 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
 
                 // Use LDAP for non-static users
                 UserIdentity id = USERS.get(ak);
+
                 if (id != null) {
                     return id.applyResolvePermissions(config);
                 }
             }
         } catch (Exception ex) {
-            LOGGER.error("LDAP error validating user: {}", ex.getMessage());
+            LOGGER.error("LDAP error validating user: {}", ex);
         }
         return null;
     }

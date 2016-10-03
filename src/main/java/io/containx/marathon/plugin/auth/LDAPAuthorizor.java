@@ -3,14 +3,13 @@ package io.containx.marathon.plugin.auth;
 import io.containx.marathon.plugin.auth.type.Action;
 import io.containx.marathon.plugin.auth.type.UserIdentity;
 import io.containx.marathon.plugin.auth.util.HTTPHelper;
-import mesosphere.marathon.plugin.AppDefinition;
 import mesosphere.marathon.plugin.Group;
 import mesosphere.marathon.plugin.PathId;
+import mesosphere.marathon.plugin.RunSpec;
 import mesosphere.marathon.plugin.auth.AuthorizedAction;
 import mesosphere.marathon.plugin.auth.Authorizer;
 import mesosphere.marathon.plugin.auth.Identity;
 import mesosphere.marathon.plugin.http.HttpResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +27,8 @@ public class LDAPAuthorizor implements Authorizer {
             if (resource instanceof Group) {
                 return isAuthorized(user, action, ((Group) resource).id());
             }
-            if (resource instanceof AppDefinition) {
-                return isAuthorized(user, action, ((AppDefinition) resource).id());
+            if (resource instanceof RunSpec) {
+                return isAuthorized(user, action, ((RunSpec) resource).id());
             }
             return resource instanceof PathId && isAuthorized(user, action, (PathId) resource);
         }

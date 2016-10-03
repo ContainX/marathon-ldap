@@ -31,6 +31,8 @@ public class LDAPConfig {
     @JsonProperty(required = false)
     private String bindPassword = null;
 
+    @JsonProperty(required = false)
+    private boolean useSimpleAuthentication;
 
     public LDAPConfig() {}
 
@@ -56,6 +58,14 @@ public class LDAPConfig {
 
     public String getBindPassword() {
         return bindPassword;
+    }
+
+    public boolean useSimpleAuthentication() {
+        return useSimpleAuthentication;
+    }
+
+    public void setUseSimpleAuthentication(boolean useSimpleAuthentication) {
+        this.useSimpleAuthentication = useSimpleAuthentication;
     }
 
     public String getDn() {
