@@ -20,6 +20,15 @@ A plugin for Mesosphere Marathon which authenticates users via UI/REST against a
 
 You can download the latest version of the JAR from our [GitHub Releases Page](https://github.com/ContainX/marathon-ldap/releases)
 
+**Download the appropriate version based on your Marathon installation version**
+
+| Marathon Version | Required Marathon-LDAP Version |
+| ---------------- | ------------------------------ |
+| 1.3+             | [1.3](https://github.com/ContainX/marathon-ldap/releases/tag/1.3) |
+| 1.1              | [1.1](https://github.com/ContainX/marathon-ldap/releases/tag/1.1) |
+| < 1.1            | [1.0](https://github.com/ContainX/marathon-ldap/releases/tag/1.0) |
+
+
 #### Building plugin from source
 
 You can clone this repository and quickly build the plugin JAR via source.
