@@ -1,6 +1,6 @@
 package io.containx.marathon.plugin.auth.type;
 
-import mesosphere.marathon.plugin.auth.AuthorizedAction;
+import com.google.common.base.MoreObjects;
 import mesosphere.marathon.plugin.auth.*;
 
 /**
@@ -46,5 +46,14 @@ public enum Action {
 
     public PermissionType getPermType() {
         return permType;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("action", action)
+                .add("entityType", entityType)
+                .add("permType", permType)
+                .toString();
     }
 }

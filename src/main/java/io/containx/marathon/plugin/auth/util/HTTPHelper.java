@@ -20,7 +20,7 @@ public final class HTTPHelper
             String encoded = header.get().replaceFirst("Basic ", "");
             String decoded = new String(Base64.getDecoder().decode(encoded), "UTF-8");
             String[] userPass = decoded.split(":", 2);
-            LOGGER.error("Returning username {} from HTTP Request headers", userPass[0]);
+
             return AuthKey.with(userPass[0], userPass[1]);
         }
         return null;
