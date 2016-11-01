@@ -44,7 +44,7 @@
                 {
                     "allowed": "delete",
                     "type": "group",
-                    "path": "/dev"
+                    "path": "/dev/.*"
                 },
                 {
                     "allowed": "update",
@@ -60,12 +60,12 @@
                 {
                     "allowed": "create",
                     "type": "app",
-                    "path": "/dev"
+                    "path": "/dev/.*"
                 },
                 {
                     "allowed": "create",
                     "type": "app",
-                    "path": "/other/dev"
+                    "path": "/other/dev/.*"
                 }
             ]
         }]

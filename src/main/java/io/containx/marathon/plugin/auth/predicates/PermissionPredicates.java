@@ -12,7 +12,7 @@ public class PermissionPredicates {
     }
 
     public static Predicate<Permission> pathContains(String path) {
-        return p -> pathValue(path).startsWith(p.getPath());
+        return p -> pathValue(path).matches(p.getPath());
     }
 
     private static String pathValue(String path) {
