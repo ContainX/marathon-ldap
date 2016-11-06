@@ -8,7 +8,7 @@ public class Permission {
 
     private PermissionType allowed = PermissionType.ALL;
     private EntityType type = EntityType.APP;
-    private String path = "/.*";
+    private String path = "/";
 
     public PermissionType getAllowed() {
         return allowed;
