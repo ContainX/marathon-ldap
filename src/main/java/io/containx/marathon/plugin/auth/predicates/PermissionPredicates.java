@@ -12,7 +12,16 @@ public class PermissionPredicates {
     }
 
     public static Predicate<Permission> pathContains(String path) {
-        return p -> pathValue(path).startsWith(p.getPath());
+        return p -> {
+            String regpath = p.getPath();
+            boolean match = pathValue(path).matches(regpath);
+            if (regpath.endsWith("/")) {
+                match = match || pathValue(path).matches(regpath + ".*");
+            } else {
+                match = match || pathValue(path).matches(regpath + "/.*");
+            }
+            return match;
+        };
     }
 
     private static String pathValue(String path) {
