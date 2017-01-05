@@ -90,8 +90,7 @@ public final class LDAPHelper {
             LOGGER.info("LDAP user search found {}", result.toString());
 
             if(bindUser != null) {
-                Attribute realDN = result.getAttributes().get("distinguishedname");
-                dn = realDN.get(0).toString();
+                dn = result.getNameInNamespace().toString();
 
                 if(userPassword == null || userPassword.isEmpty()) {
                     return null;
