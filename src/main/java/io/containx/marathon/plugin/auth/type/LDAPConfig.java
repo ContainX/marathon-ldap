@@ -17,13 +17,13 @@ public class LDAPConfig {
     private String userSearch = "(uid={username})";
 
     @JsonProperty(required = false)
-    private String userSubTree = "ou=People";
+    private String userSubTree = null;
 
     @JsonProperty(required = false)
     private String groupSearch = null;
 
     @JsonProperty(required = false)
-    private String groupSubTree = "ou=Group";
+    private String groupSubTree = null;
 
     @JsonProperty(required = false)
     private String bindUser = null;
