@@ -40,8 +40,8 @@ public final class LDAPHelper {
             String bindPassword = userPassword;
 
             if(bindUser != null) {
-                dn = bindUser;
-                bindPassword = config.getBindPassword();
+                bindUser = bindUser.replace("{username}", username);
+                bindPassword = (config.getBindPassword() == null) ? userPassword : config.getBindPassword();
             } else {
                 if (config.useSimpleAuthentication()) {
                     dn = config.getDn().replace("{username}", username);
