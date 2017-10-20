@@ -17,7 +17,9 @@
                     "userSearch": "(&(uid={username})(objectClass=inetOrgPerson))",
                     "userSubTree": "ou=People",
                     "groupSearch": "(&(memberUid={username})(objectClass=posixGroup))",
-                    "groupSubTree": "ou=Group"
+                    "groupSubTree": "ou=Group",
+                    "ldapConnectTimeout": 3000,
+                    "ldapReadTimeout": 3000
                 },
                 "users": [
                     {

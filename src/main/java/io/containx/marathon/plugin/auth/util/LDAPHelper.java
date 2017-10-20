@@ -40,8 +40,10 @@ public final class LDAPHelper {
             String bindPassword = userPassword;
 
             if(bindUser != null) {
-                bindUser = bindUser.replace("{username}", username);
-                bindPassword = (config.getBindPassword() == null) ? userPassword : config.getBindPassword();
+                dn = bindUser;
+                bindPassword = config.getBindPassword();
+//                bindUser = bindUser.replace("{username}", username);
+//                bindPassword = (config.getBindPassword() == null) ? userPassword : config.getBindPassword();
             } else {
                 if (config.useSimpleAuthentication()) {
                     dn = config.getDn().replace("{username}", username);
@@ -60,7 +62,12 @@ public final class LDAPHelper {
             env.put(Context.PROVIDER_URL, config.getUrl());
             env.put(Context.SECURITY_PRINCIPAL, dn);
             env.put(Context.SECURITY_CREDENTIALS, bindPassword);
+            env.put("com.sun.jndi.ldap.connect.timeout", config.getLdapConnectTimeout().toString());
+            env.put("com.sun.jndi.ldap.read.timeout", config.getLdapReadTimeout().toString());
+
             context = new InitialDirContext(env);
+
+            LOGGER.debug("getEnvironment: " + context.getEnvironment());
 
             // if an exception wasn't raised, then we managed to bind to the directory
             LOGGER.info("LDAP Bind succeeded for user {}", dn);
