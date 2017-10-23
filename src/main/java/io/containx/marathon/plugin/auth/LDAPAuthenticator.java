@@ -25,6 +25,7 @@ import scala.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -105,12 +106,23 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
     /**
      * Authenticate, if the username matches the password.
      */
-    private Identity doAuth(String username, String password) {
-        Set<String> memberships = LDAPHelper.validate(username, password, config.getLdap());
-        if (memberships != null) {
-            return new UserIdentity(username, memberships).applyResolvePermissions(config);
-        } else {
-            return null;
+    private Identity doAuth(String username, String password) throws NamingException {
+        int count = 0;
+        int maxTries = 5;
+
+        while(true) {
+            try {
+                Set<String> memberships = LDAPHelper.validate(username, password, config.getLdap());
+                if (memberships != null) {
+                    return new UserIdentity(username, memberships).applyResolvePermissions(config);
+                } else {
+                    return null;
+                }
+            } catch (Exception ex) {
+                LOGGER.error("LDAP error Exception: {}", ex);
+
+                if (++count == maxTries) throw ex;
+            }
         }
     }
 
