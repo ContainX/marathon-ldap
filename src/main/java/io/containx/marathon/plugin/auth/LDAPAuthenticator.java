@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
 import io.containx.marathon.plugin.auth.type.AuthKey;
 import io.containx.marathon.plugin.auth.type.Configuration;
 import io.containx.marathon.plugin.auth.type.UserIdentity;
@@ -23,26 +25,40 @@ import scala.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPAuthenticator.class);
 
+    private final ExecutionContext EC = ExecutionContexts
+        .fromExecutorService(
+            Executors.newSingleThreadExecutor(r -> new Thread(r, "Ldap-ExecutorThread"))
+        );
 
-    private final ExecutionContext EC = ExecutionContexts.fromExecutorService(Executors.newSingleThreadExecutor());
     private final LoadingCache<AuthKey, UserIdentity> USERS = CacheBuilder.newBuilder()
         .maximumSize(2000)
-        .expireAfterWrite(5, TimeUnit.MINUTES)
-        .build(new CacheLoader<AuthKey, UserIdentity>() {
-            @Override
-            public UserIdentity load(AuthKey key) throws Exception {
-                return (UserIdentity) doAuth(key.getUsername(), key.getPassword());
-            }
-        });
+        .expireAfterWrite(60, TimeUnit.MINUTES)
+        .refreshAfterWrite(5, TimeUnit.MINUTES)
+        .build(
+            CacheLoader.asyncReloading(
+                new CacheLoader<AuthKey, UserIdentity>() {
+                    @Override
+                    public UserIdentity load(AuthKey key) throws Exception {
+                        return (UserIdentity) doAuth(key.getUsername(), key.getPassword());
+                    }
+                }
+                , Executors.newSingleThreadExecutor(
+                    r -> new Thread(r, "Ldap-CacheLoaderExecutorThread")
+                )
+            )
+        );
 
     private Configuration config;
 
@@ -90,12 +106,23 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
     /**
      * Authenticate, if the username matches the password.
      */
-    private Identity doAuth(String username, String password) {
-        Set<String> memberships = LDAPHelper.validate(username, password, config.getLdap());
-        if (memberships != null) {
-            return new UserIdentity(username, memberships).applyResolvePermissions(config);
-        } else {
-            return null;
+    private Identity doAuth(String username, String password) throws NamingException {
+        int count = 0;
+        int maxTries = 5;
+
+        while(true) {
+            try {
+                Set<String> memberships = LDAPHelper.validate(username, password, config.getLdap());
+                if (memberships != null) {
+                    return new UserIdentity(username, memberships).applyResolvePermissions(config);
+                } else {
+                    return null;
+                }
+            } catch (Exception ex) {
+                LOGGER.error("LDAP error Exception: {}", ex);
+
+                if (++count == maxTries) throw ex;
+            }
         }
     }
 

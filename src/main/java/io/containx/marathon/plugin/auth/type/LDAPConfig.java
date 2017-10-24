@@ -34,6 +34,12 @@ public class LDAPConfig {
     @JsonProperty(required = false)
     private boolean useSimpleAuthentication;
 
+    @JsonProperty(required = false)
+    private Integer ldapConnectTimeout = 3000;
+
+    @JsonProperty(required = false)
+    private Integer ldapReadTimeout = 3000;
+
     public LDAPConfig() {}
 
     public String getUrl() {
@@ -108,6 +114,22 @@ public class LDAPConfig {
         this.userSubTree = userSubTree;
     }
 
+    public Integer getLdapConnectTimeout() {
+        return ldapConnectTimeout;
+    }
+
+    public void setLdapConnectTimeout(Integer ldapConnectTimeout) {
+        this.ldapConnectTimeout = ldapConnectTimeout;
+    }
+
+    public Integer getLdapReadTimeout() {
+        return ldapReadTimeout;
+    }
+
+    public void setLdapReadTimeout(Integer ldapReadTimeout) {
+        this.ldapReadTimeout = ldapReadTimeout;
+    }
+
     @Override
     public String toString() {
         return "LDAPConfig{" +
@@ -120,6 +142,8 @@ public class LDAPConfig {
                 ", userSubTree='" + userSubTree + '\'' +
                 ", groupSearch='" + groupSearch + '\'' +
                 ", groupSubTree='" + groupSubTree + '\'' +
+                ", ldapConnectTimeout='" + ldapConnectTimeout + '\'' +
+                ", ldapReadTimeout='" + ldapReadTimeout + '\'' +
                 '}';
     }
 }
