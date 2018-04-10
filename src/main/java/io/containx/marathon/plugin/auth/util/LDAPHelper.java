@@ -36,7 +36,7 @@ public final class LDAPHelper {
 
         do {
             DirContext context = null;
-          
+
             try {
                 String dn = "";
                 String bindUser = config.getBindUser();
@@ -98,6 +98,17 @@ public final class LDAPHelper {
                 LOGGER.info("LDAP user search found {}", result.toString());
 
                 if (bindUser != null) {
+                    dn = bindUser.replace("{username}", username);
+                    bindPassword = (config.getBindPassword() == null) ? userPassword : config.getBindPassword();
+
+                    LOGGER.debug("Authenticate with DN {}", dn);
+                    env.put(Context.SECURITY_PRINCIPAL, dn);
+                    env.put(Context.SECURITY_CREDENTIALS, bindPassword);
+
+                    context = new InitialDirContext(env);
+
+                    LOGGER.info("LDAP Auth succeeded for user {}", dn);
+                } else {
                     dn = result.getNameInNamespace().toString();
 
                     if (userPassword == null || userPassword.isEmpty()) {
