@@ -6,7 +6,7 @@
     <groupId>io.containx</groupId>
     <artifactId>marathon-ldap</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <name>Marathon LDAP authentication</name>
 
     <properties>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>mesosphere.marathon</groupId>
             <artifactId>plugin-interface_2.11</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
