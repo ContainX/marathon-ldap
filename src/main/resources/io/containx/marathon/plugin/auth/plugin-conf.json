@@ -14,7 +14,7 @@
                     "dn": "uid={username}",
                     "bindUser": "usernameToBind",
                     "bindPassword": "passwordToBind",
-                    "userSearch": "(&(uid={username})(objectClass=inetOrgPerson))",
+                    "userSearch": "(&(uid={username})(objectClass=marathonUser))",
                     "userSubTree": "ou=People",
                     "groupSearch": "(&(memberUid={username})(objectClass=posixGroup))",
                     "groupSubTree": "ou=Group",

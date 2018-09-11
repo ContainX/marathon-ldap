@@ -13,6 +13,10 @@ public class Authorization {
         return access;
     }
 
+    public void setAccess(Set<Access> access) {
+        this.access = access;
+    }
+
     public Optional<Access> accessFor(String group) {
         return access.stream().filter(a -> a.getGroup().equalsIgnoreCase(group)).findFirst();
     }

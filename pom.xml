@@ -13,7 +13,7 @@
       <project.jdk.version>1.8</project.jdk.version>
       <maven.compiler.source>${project.jdk.version}</maven.compiler.source>
       <maven.compiler.target>${project.jdk.version}</maven.compiler.target>
-        <marathon.version>1.6.322</marathon.version>
+        <marathon.version>1.6.352</marathon.version>
     </properties>
 
     <licenses>

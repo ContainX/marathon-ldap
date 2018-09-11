@@ -54,9 +54,7 @@ public class UserIdentity implements Identity {
 
             Set<Permission> perms = access.get().getPermissions();
             if (perms != null) {
-                for (Permission p : perms) {
-                    combinedPerms.add(p);
-                }
+                combinedPerms.addAll(perms);
             }
         }
         return this;

@@ -3,8 +3,8 @@ package io.containx.marathon.plugin.auth.util;
 import io.containx.marathon.plugin.auth.type.AuthKey;
 import mesosphere.marathon.plugin.http.HttpRequest;
 import mesosphere.marathon.plugin.http.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import scala.Option;
 
 import java.util.Base64;
@@ -12,7 +12,7 @@ import java.util.Base64;
 public final class HTTPHelper
 {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HTTPHelper.class);
+    //private static final Logger LOGGER = LoggerFactory.getLogger(HTTPHelper.class);
 
     public static AuthKey authKeyFromHeaders(HttpRequest request) throws Exception {
         Option<String> header = request.header("Authorization").headOption();

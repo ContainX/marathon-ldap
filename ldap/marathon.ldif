@@ -1,0 +1,15 @@
+dn: cn=marathon,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: marathon
+olcAttributeTypes: ( 2.5.6.9.1.1 NAME 'marathonAccessRule'
+  DESC 'marathon-ldap permissions in json format.'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  USAGE userApplications )
+olcObjectClasses: ( 2.5.6.9.1 NAME 'marathonAccess'
+  DESC 'marathon-ldap group with permissions'
+  AUXILIARY
+  MUST ( marathonAccessRule $ cn ) )
+olcObjectClasses: ( 2.5.6.9.2 NAME 'marathonUser'
+  DESC 'marathon User'
+  AUXILIARY )
