@@ -180,7 +180,7 @@ public final class LDAPHelper {
         }
     }
 
-    public static Set<Access> getAccessRules(LDAPConfig config) throws NamingException {
+    public static Set<Access> getAccessRules(LDAPConfig config, Set<Access> accessRules) throws NamingException {
 
         if (config == null) {
             LOGGER.warn("LDAP Configuration not defined.  Skipping LDAP authentication");
@@ -218,7 +218,6 @@ public final class LDAPHelper {
                 // openLDAP needs the following (assumption).  Does anything else break if it's added?
                 controls.setReturningAttributes(new String[]{"*", "+"});
 
-                    Set<Access> accessRules = new HashSet<>();
                     String searchString = "(&(ObjectClass=marathonAccess)(ObjectClass=groupOfNames))";
                     String searchContext = config.getBase();
                     if (config.getUserSubTree() != null) {

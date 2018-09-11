@@ -78,8 +78,8 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
         try {
             config = new ObjectMapper().readValue(jsObject.toString(), Configuration.class);
             if(config.getLdap().getRulesUpdaterBindUser() != null ) {
-                accessRulesUpdaterTask = new AccessRulesUpdaterTask(config.getLdap());
-                scheduler.scheduleAtFixedRate(accessRulesUpdaterTask, refreshInterval, refreshInterval, TimeUnit.SECONDS);
+                accessRulesUpdaterTask = new AccessRulesUpdaterTask(config);
+                scheduler.scheduleAtFixedRate(accessRulesUpdaterTask, 0, refreshInterval, TimeUnit.SECONDS);
             }
         } catch (Exception e) {
             LOGGER.error("Error reading configuration JSON: {}", e.getMessage(), e);
