@@ -38,6 +38,10 @@
                     "type": "app"
                 },
                 {
+                    "allowed": "*",
+                    "type": "resource"
+                },
+                {
                     "allowed": "create",
                     "type": "group"
                 },

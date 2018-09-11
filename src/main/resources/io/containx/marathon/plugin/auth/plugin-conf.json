@@ -41,6 +41,10 @@
                                 },
                                 {
                                     "allowed": "*",
+                                    "type"   : "resource"
+                                },
+                                {
+                                    "allowed": "*",
                                     "type"   : "group"
                                 }
                             ]
@@ -51,6 +55,11 @@
                                 {
                                     "allowed": "view",
                                     "type": "app",
+                                    "path": "/"
+                                },
+                                {
+                                    "allowed": "view",
+                                    "type": "resource",
                                     "path": "/"
                                 },
                                 {

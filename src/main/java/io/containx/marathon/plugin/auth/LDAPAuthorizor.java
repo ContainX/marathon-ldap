@@ -7,6 +7,7 @@ import mesosphere.marathon.plugin.Group;
 import mesosphere.marathon.plugin.PathId;
 import mesosphere.marathon.plugin.RunSpec;
 import mesosphere.marathon.plugin.auth.AuthorizedAction;
+import mesosphere.marathon.plugin.auth.AuthorizedResource;
 import mesosphere.marathon.plugin.auth.Authorizer;
 import mesosphere.marathon.plugin.auth.Identity;
 import mesosphere.marathon.plugin.http.HttpResponse;
@@ -37,6 +38,11 @@ public class LDAPAuthorizor implements Authorizer {
             if (action == Action.VIEW_RESOURCE) {
                 return true;
             }
+
+            if (resource instanceof AuthorizedResource) {
+                return isAuthorized(user, action);
+            }
+
             return resource instanceof PathId && isAuthorized(user, action, (PathId) resource);
         }
         return false;
@@ -45,6 +51,12 @@ public class LDAPAuthorizor implements Authorizer {
     private boolean isAuthorized(UserIdentity identity, Action action, PathId path) {
         boolean authorized = identity.isAuthorized(action, path.toString());
         LOGGER.debug("IsAuthorized (private): Action :: {}, Path = {}, authorized = {}", action, path.toString(), authorized);
+        return authorized;
+    }
+
+    private boolean isAuthorized(UserIdentity identity, Action action) {
+        boolean authorized = identity.isAuthorized(action, "/");
+        LOGGER.debug("IsAuthorized (private): Action :: {}, Path = {}, authorized = {}", action, authorized);
         return authorized;
     }
 
