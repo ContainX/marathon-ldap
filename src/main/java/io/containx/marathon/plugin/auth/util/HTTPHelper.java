@@ -3,8 +3,6 @@ package io.containx.marathon.plugin.auth.util;
 import io.containx.marathon.plugin.auth.type.AuthKey;
 import mesosphere.marathon.plugin.http.HttpRequest;
 import mesosphere.marathon.plugin.http.HttpResponse;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import scala.Option;
 
 import java.util.Base64;

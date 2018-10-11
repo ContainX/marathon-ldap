@@ -33,14 +33,8 @@ public class LDAPAuthorizor implements Authorizer {
                 return isAuthorized(user, action, ((RunSpec) resource).id());
             }
 
-            // We don't get the PathID from View Resource but prior calls ensure the RunSpec is authorized
-            // in general
-            if (action == Action.VIEW_RESOURCE) {
-                return true;
-            }
-
             if (resource instanceof AuthorizedResource) {
-                return isAuthorized(user, action);
+                return isAuthorized(user, action, ((AuthorizedResource) resource));
             }
 
             return resource instanceof PathId && isAuthorized(user, action, (PathId) resource);
@@ -54,9 +48,9 @@ public class LDAPAuthorizor implements Authorizer {
         return authorized;
     }
 
-    private boolean isAuthorized(UserIdentity identity, Action action) {
-        boolean authorized = identity.isAuthorized(action, "/");
-        LOGGER.debug("IsAuthorized (private): Action :: {}, Path = {}, authorized = {}", action, authorized);
+    private boolean isAuthorized(UserIdentity identity, Action action, AuthorizedResource resource) {
+        boolean authorized = identity.isAuthorized(action, resource);
+        LOGGER.debug("IsAuthorized resource (private): Action :: {}, Resource = {}, authorized = {}", action, resource.toString(), authorized);
         return authorized;
     }
 

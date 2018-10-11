@@ -1,12 +1,13 @@
 package io.containx.marathon.plugin.auth.type;
 
 import com.google.common.base.MoreObjects;
+import mesosphere.marathon.plugin.auth.Identity;
 
 import java.util.Objects;
 
 public class Permission {
 
-    private PermissionType allowed = PermissionType.ALL;
+    private PermissionType allowed = PermissionType.NONE;
     private EntityType type = EntityType.APP;
     private String path = "/";
 
