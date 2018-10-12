@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum EntityType {
     APP,
-    GROUP
+    GROUP,
+    RESOURCE
     ;
 
     @JsonCreator

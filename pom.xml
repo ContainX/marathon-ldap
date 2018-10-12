@@ -6,13 +6,14 @@
     <groupId>io.containx</groupId>
     <artifactId>marathon-ldap</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <name>Marathon LDAP authentication</name>
 
     <properties>
       <project.jdk.version>1.8</project.jdk.version>
       <maven.compiler.source>${project.jdk.version}</maven.compiler.source>
       <maven.compiler.target>${project.jdk.version}</maven.compiler.target>
+        <marathon.version>1.6.352</marathon.version>
     </properties>
 
     <licenses>
@@ -38,8 +39,8 @@
     <dependencies>
         <dependency>
             <groupId>mesosphere.marathon</groupId>
-            <artifactId>plugin-interface_2.11</artifactId>
-            <version>1.4.8</version>
+            <artifactId>plugin-interface_2.12</artifactId>
+            <version>${marathon.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -97,7 +98,7 @@
                         </executions>
                         <configuration>
                             <description>Marathon LDAP/AD Plugin</description>
-                            <releaseName>v${project.version}</releaseName>
+                            <releaseName>v${project.version}-${marathon.version}</releaseName>
                             <tag>${project.version}</tag>
                             <artifact>${project.build.directory}/marathon-ldap.jar</artifact>
 

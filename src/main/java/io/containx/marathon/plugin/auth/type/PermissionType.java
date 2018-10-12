@@ -16,7 +16,10 @@ public enum PermissionType {
         if (type != null && (type.equals("*") || type.equals("ALL"))) {
             return ALL;
         }
-        return PermissionType.valueOf(type.toUpperCase());
+        if (type != null) {
+            return PermissionType.valueOf(type.toUpperCase());
+        }
+        return null;
     }
 
     @JsonValue

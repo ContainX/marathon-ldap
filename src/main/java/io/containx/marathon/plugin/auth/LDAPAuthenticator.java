@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListenableFutureTask;
 import io.containx.marathon.plugin.auth.type.AuthKey;
 import io.containx.marathon.plugin.auth.type.Configuration;
 import io.containx.marathon.plugin.auth.type.UserIdentity;
@@ -19,54 +17,71 @@ import mesosphere.marathon.plugin.http.HttpRequest;
 import mesosphere.marathon.plugin.http.HttpResponse;
 import mesosphere.marathon.plugin.plugin.PluginConfiguration;
 import play.api.libs.json.JsObject;
+import play.api.libs.json.JsValue;
 import scala.Option;
 import scala.concurrent.ExecutionContext;
 import scala.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
-import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.naming.NamingException;
 
 public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LDAPAuthenticator.class);
+    private AccessRulesUpdaterTask accessRulesUpdaterTask;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final long DEFAULT_INTERVAL_IN_SECONDS = 60;
+    private long refreshInterval = DEFAULT_INTERVAL_IN_SECONDS;
 
     private final ExecutionContext EC = ExecutionContexts
         .fromExecutorService(
             Executors.newSingleThreadExecutor(r -> new Thread(r, "Ldap-ExecutorThread"))
         );
 
-    private final LoadingCache<AuthKey, UserIdentity> USERS = CacheBuilder.newBuilder()
-        .maximumSize(2000)
-        .expireAfterWrite(60, TimeUnit.MINUTES)
-        .refreshAfterWrite(5, TimeUnit.MINUTES)
-        .build(
-            CacheLoader.asyncReloading(
-                new CacheLoader<AuthKey, UserIdentity>() {
-                    @Override
-                    public UserIdentity load(AuthKey key) throws Exception {
-                        return (UserIdentity) doAuth(key.getUsername(), key.getPassword());
-                    }
-                }
-                , Executors.newSingleThreadExecutor(
-                    r -> new Thread(r, "Ldap-CacheLoaderExecutorThread")
-                )
-            )
-        );
+    private LoadingCache<AuthKey, UserIdentity> USERS;
 
     private Configuration config;
 
     @Override
     public void initialize(scala.collection.immutable.Map<String, Object> map, JsObject jsObject) {
+        Map<String, JsValue> conf = scala.collection.JavaConverters.mapAsJavaMap(jsObject.value());
+        String intervalKey = "refresh-interval-seconds";
+        if(conf.containsKey(intervalKey)){
+            refreshInterval = Long.parseLong(conf.get(intervalKey).toString());
+            if(refreshInterval <= 0) {
+                refreshInterval = DEFAULT_INTERVAL_IN_SECONDS;
+            }
+        }
+        USERS = CacheBuilder.newBuilder()
+                .maximumSize(2000)
+                .expireAfterWrite(60, TimeUnit.MINUTES)
+                .refreshAfterWrite(refreshInterval, TimeUnit.SECONDS)
+                .build(
+                        CacheLoader.asyncReloading(
+                                new CacheLoader<AuthKey, UserIdentity>() {
+                                    @Override
+                                    public UserIdentity load(AuthKey key) throws Exception {
+                                        return (UserIdentity) doAuth(key.getUsername(), key.getPassword());
+                                    }
+                                }
+                                , Executors.newSingleThreadExecutor(
+                                        r -> new Thread(r, "Ldap-CacheLoaderExecutorThread")
+                                )
+                        )
+                );
         try {
             config = new ObjectMapper().readValue(jsObject.toString(), Configuration.class);
-        } catch (IOException e) {
+            if(config.getLdap().getRulesUpdaterBindUser() != null ) {
+                accessRulesUpdaterTask = new AccessRulesUpdaterTask(config);
+                scheduler.scheduleAtFixedRate(accessRulesUpdaterTask, 0, refreshInterval, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
             LOGGER.error("Error reading configuration JSON: {}", e.getMessage(), e);
         }
     }
@@ -78,6 +93,9 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
 
     private Identity doAuth(HttpRequest request) {
         try {
+            if(accessRulesUpdaterTask != null) {
+                config.setAuthorization(accessRulesUpdaterTask.getAccessRules());
+            }
             AuthKey ak = HTTPHelper.authKeyFromHeaders(request);
             if (ak != null) {
 
@@ -110,6 +128,10 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
         int count = 0;
         int maxTries = 5;
 
+        if(accessRulesUpdaterTask != null) {
+            config.setAuthorization(accessRulesUpdaterTask.getAccessRules());
+        }
+
         while(true) {
             try {
                 Set<String> memberships = LDAPHelper.validate(username, password, config.getLdap());
@@ -120,7 +142,6 @@ public class LDAPAuthenticator implements Authenticator, PluginConfiguration {
                 }
             } catch (Exception ex) {
                 LOGGER.error("LDAP error Exception: {}", ex);
-
                 if (++count == maxTries) throw ex;
             }
         }

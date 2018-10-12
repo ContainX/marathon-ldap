@@ -129,6 +129,34 @@ comments to the one you deploy)
 }
 ```
 
+see `test/resources/config.json` for a complete configuration example.
+
+**LDAP permissions support**
+
+The permissions can be stored and retrieved from the LDAP directory at regular intervals.
+Permissions and group updates changes no longer require restarting marathon.
+When enabled, the config key `plugins.authentication.configuration.authorization` is ignored.
+
+You must first add the marathon schema to your LDAP server, see the [ldap README](./ldap/README.md) .
+
+The schema provide two objectclasses :
+- `marathonUser` add this to the user entries and in the configuration `userSearch` filter. 
+    - Only user having this objectclass will be allowed to autenticate. (optional)
+- `marathonAccess` add this objectclass to the group entries. 
+    - Add at least one `marathonAccessRule` attribute.
+    - Each `marathonAccessRule` **must** contain a valid permission json like `{"allowed":"*","path":"/","type":"app"}` 
+
+
+Edit the `/var/marathon/plugins/plugin-conf.json` and configure these keys :
+```
+plugins.authentication.configuration.ldap.rulesUpdaterBindUser
+plugins.authentication.configuration.ldap.rulesUpdaterBindPassword
+plugins.authentication.configuration.refresh-interval-seconds
+```
+- `rulesUpdaterBindUser` and `rulesUpdaterBindPassword` are required for LDAP permissions.
+  Be careful to give this LDAP userDN search and read access to the configured `groupSubTree`.
+- `refresh-interval-seconds` is optional, default is `60`.
+
 **Configure Marathon**
 
 Depending on your environment your Marathon configuration is either using files per option, typically found under ```/etc/marathon/conf``` or options are being passed in via the service.

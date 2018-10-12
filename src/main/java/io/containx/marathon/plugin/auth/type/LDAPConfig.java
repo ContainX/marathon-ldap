@@ -32,6 +32,12 @@ public class LDAPConfig {
     private String bindPassword = null;
 
     @JsonProperty(required = false)
+    private String rulesUpdaterBindUser = null;
+
+    @JsonProperty(required = false)
+    private String rulesUpdaterBindPassword = null;
+
+    @JsonProperty(required = false)
     private boolean useSimpleAuthentication;
 
     @JsonProperty(required = false)
@@ -64,6 +70,14 @@ public class LDAPConfig {
 
     public String getBindPassword() {
         return bindPassword;
+    }
+
+    public String getRulesUpdaterBindUser() {
+        return rulesUpdaterBindUser;
+    }
+
+    public String getRulesUpdaterBindPassword() {
+        return rulesUpdaterBindPassword;
     }
 
     public boolean useSimpleAuthentication() {
@@ -138,6 +152,8 @@ public class LDAPConfig {
                 ", dn='" + dn + '\'' +
                 ", bindUser='" + bindUser + '\'' +
                 ", bindPassword='" + bindPassword + '\'' +
+                ", rulesUpdaterBindUser='" + rulesUpdaterBindUser + '\'' +
+                ", rulesUpdaterBindPassword='" + rulesUpdaterBindPassword + '\'' +
                 ", userSearch='" + userSearch + '\'' +
                 ", userSubTree='" + userSubTree + '\'' +
                 ", groupSearch='" + groupSearch + '\'' +

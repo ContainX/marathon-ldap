@@ -12,8 +12,11 @@ public enum Action {
     UPDATE_APP(UpdateRunSpec$.MODULE$, PermissionType.UPDATE, EntityType.APP),
     DELETE_APP(DeleteRunSpec$.MODULE$, PermissionType.DELETE, EntityType.APP),
     VIEW_APP(ViewRunSpec$.MODULE$, PermissionType.VIEW, EntityType.APP),
-    VIEW_RESOURCE(ViewResource$.MODULE$, PermissionType.VIEW, EntityType.APP),
-    UPDATE_RESOURCE(UpdateResource$.MODULE$, PermissionType.UPDATE, EntityType.APP),
+
+    // Resource Actions
+    VIEW_RESOURCE(ViewResource$.MODULE$, PermissionType.VIEW, EntityType.RESOURCE),
+    UPDATE_RESOURCE(UpdateResource$.MODULE$, PermissionType.UPDATE, EntityType.RESOURCE),
+    DELETE_RESOURCE(DeleteResource$.MODULE$, PermissionType.DELETE, EntityType.RESOURCE),
 
     // Group Actions
     CREATE_GROUP(CreateGroup$.MODULE$, PermissionType.CREATE, EntityType.GROUP),
