@@ -60,7 +60,7 @@ public final class LDAPHelper {
                     }
                 }
 
-                LOGGER.info("LDAP trying to connect as {} on {}", dn, config.getUrl());
+                LOGGER.debug("LDAP trying to connect as {} on {}", dn, config.getUrl());
                 Hashtable<String, String> env = new Hashtable<>();
                 env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
                 env.put(Context.PROVIDER_URL, config.getUrl());
@@ -74,7 +74,7 @@ public final class LDAPHelper {
                 LOGGER.debug("getEnvironment: " + context.getEnvironment());
 
                 // if an exception wasn't raised, then we managed to bind to the directory
-                LOGGER.info("LDAP Bind succeeded for user {}", dn);
+                LOGGER.debug("LDAP Bind succeeded for user {}", dn);
 
                 SearchControls controls = new SearchControls();
                 controls.setSearchScope(SUBTREE_SCOPE);
@@ -87,7 +87,7 @@ public final class LDAPHelper {
                     searchContext = config.getUserSubTree() +
                             "," + searchContext;
                 }
-                LOGGER.info("LDAP searching {} in {}", searchString, searchContext);
+                LOGGER.debug("LDAP searching {} in {}", searchString, searchContext);
                 NamingEnumeration<SearchResult> renum =
                     context.search(searchContext, searchString, controls);
 
@@ -97,7 +97,7 @@ public final class LDAPHelper {
                 }
 
                 SearchResult result = renum.next();
-                LOGGER.info("LDAP user search found {}", result.toString());
+                LOGGER.debug("LDAP user search found {}", result.toString());
 
                 if (bindUser != null) {
                     dn = bindUser.replace("{username}", username);
@@ -109,7 +109,7 @@ public final class LDAPHelper {
 
                     context = new InitialDirContext(env);
 
-                    LOGGER.info("LDAP Auth succeeded for user {}", dn);
+                    LOGGER.debug("LDAP Auth succeeded for user {}", dn);
                 } else {
                     dn = result.getNameInNamespace();
 
@@ -123,7 +123,7 @@ public final class LDAPHelper {
 
                     context = new InitialDirContext(env);
 
-                    LOGGER.info("LDAP Auth succeeded for user {}", dn);
+                    LOGGER.debug("LDAP Auth succeeded for user {}", dn);
                 }
 
                 // search group memberships as user attributes
@@ -162,7 +162,7 @@ public final class LDAPHelper {
 
                 }
 
-                LOGGER.info("LDAP memberships for {} are {}", username, memberships);
+                LOGGER.debug("LDAP memberships for {} are {}", username, memberships);
                 return memberships;
 
             } catch (NamingException e) {
@@ -197,7 +197,7 @@ public final class LDAPHelper {
                 String bindUser = config.getRulesUpdaterBindUser();
                 String bindPassword = config.getRulesUpdaterBindPassword();
 
-                LOGGER.info("LDAP trying to connect as {} on {}", bindUser, config.getUrl());
+                LOGGER.debug("LDAP trying to connect as {} on {}", bindUser, config.getUrl());
                 Hashtable<String, String> env = new Hashtable<>();
                 env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
                 env.put(Context.PROVIDER_URL, config.getUrl());
@@ -211,7 +211,7 @@ public final class LDAPHelper {
                 LOGGER.debug("getEnvironment: " + context.getEnvironment());
 
                 // if an exception wasn't raised, then we managed to bind to the directory
-                LOGGER.info("LDAP Bind succeeded for user {}", bindUser);
+                LOGGER.debug("LDAP Bind succeeded for user {}", bindUser);
 
                 SearchControls controls = new SearchControls();
                 controls.setSearchScope(SUBTREE_SCOPE);
@@ -247,7 +247,7 @@ public final class LDAPHelper {
                         LOGGER.debug("LDAP found {} in group {}", group, groupName);
                     }
 
-                LOGGER.info("LDAP accessRules {}", accessRules);
+                LOGGER.debug("LDAP accessRules {}", accessRules);
                 return accessRules;
 
             } catch (NamingException e) {
