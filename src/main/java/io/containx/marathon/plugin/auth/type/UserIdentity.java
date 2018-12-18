@@ -1,21 +1,20 @@
 package io.containx.marathon.plugin.auth.type;
 
 import com.google.common.collect.Sets;
+import mesosphere.marathon.plugin.auth.AuthorizedResource;
 import mesosphere.marathon.plugin.auth.Identity;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static io.containx.marathon.plugin.auth.predicates.PermissionPredicates.matchesAction;
-import static io.containx.marathon.plugin.auth.predicates.PermissionPredicates.pathContains;
+import static io.containx.marathon.plugin.auth.predicates.PermissionPredicates.*;
 
 public class UserIdentity implements Identity {
 
     private String username;
     private String password;
     private Set<String> groups = Sets.newHashSet();
-    private Set<Permission> combinedPerms = Sets.newHashSet();
+    private Set<Permission> combinedPerms = Collections.newSetFromMap(new ConcurrentHashMap<Permission, Boolean>());
 
     public UserIdentity() { }
 
@@ -46,6 +45,7 @@ public class UserIdentity implements Identity {
     }
 
     public UserIdentity applyResolvePermissions(Configuration config) {
+        combinedPerms.clear();
         for (String group : groups) {
             Optional<Access> access = config.getAuthorization().accessFor(group);
             if (!access.isPresent()) {
@@ -61,8 +61,13 @@ public class UserIdentity implements Identity {
     }
 
     public boolean isAuthorized(Action action, String path) {
+        if( combinedPerms.stream().filter(matchesNoneAction(action)).anyMatch(pathContains(path))) return false;
         return combinedPerms.stream().filter(matchesAction(action)).anyMatch(pathContains(path));
+    }
 
+    public boolean isAuthorized(Action action, AuthorizedResource resource) {
+        if( combinedPerms.stream().filter(matchesNoneAction(action)).anyMatch(resourceIs(resource))) return false;
+        return combinedPerms.stream().filter(matchesAction(action)).anyMatch(resourceIs(resource));
     }
 
     public static UserIdentity keyFor(String username) {

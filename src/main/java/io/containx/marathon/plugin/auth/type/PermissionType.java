@@ -8,18 +8,19 @@ public enum PermissionType {
     UPDATE,
     DELETE,
     VIEW,
-    ALL
+    ALL,
+    NONE
     ;
 
     @JsonCreator
     public static PermissionType forValue(String type) {
-        if (type != null && (type.equals("*") || type.equals("ALL"))) {
+        if (type != null && (type.equals("*") || type.toUpperCase().equals("ALL"))) {
             return ALL;
         }
-        if (type != null) {
-            return PermissionType.valueOf(type.toUpperCase());
+        if (type == null || type.equals("") || type.toUpperCase().equals("NONE")) {
+            return NONE;
         }
-        return null;
+        return PermissionType.valueOf(type.toUpperCase());
     }
 
     @JsonValue
@@ -33,4 +34,9 @@ public enum PermissionType {
     public boolean isAllWildcard() {
         return this == ALL;
     }
+
+    public boolean isDenied() {
+        return this == NONE;
+    }
+
 }
